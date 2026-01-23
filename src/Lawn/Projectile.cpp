@@ -389,7 +389,8 @@ bool Projectile::IsSplashDamage(Zombie* theZombie)
 	return 
 		mProjectileType == ProjectileType::PROJECTILE_MELON || 
 		mProjectileType == ProjectileType::PROJECTILE_WINTERMELON || 
-		mProjectileType == ProjectileType::PROJECTILE_FIREBALL;
+		mProjectileType == ProjectileType::PROJECTILE_FIREBALL ||
+		mProjectileType == ProjectileType::PROJECTILE_STAR;
 }
 
 unsigned int Projectile::GetDamageFlags(Zombie* theZombie)
@@ -404,7 +405,7 @@ unsigned int Projectile::GetDamageFlags(Zombie* theZombie)
 	{
 		SetBit(aDamageFlags, static_cast<int>(DamageFlags::DAMAGE_BYPASSES_SHIELD), true);
 	}
-	else if (mMotionType == ProjectileMotion::MOTION_STAR && mVelX < 0.0f)
+	else if (mMotionType == ProjectileMotion::MOTION_STAR && mVelX <= 0.0f)
 	{
 		SetBit(aDamageFlags, static_cast<int>(DamageFlags::DAMAGE_BYPASSES_SHIELD), true);
 	}
@@ -420,7 +421,7 @@ unsigned int Projectile::GetDamageFlags(Zombie* theZombie)
 bool Projectile::IsZombieHitBySplash(Zombie* theZombie)
 {
 	Rect aProjectileRect = GetProjectileRect();
-	if (mProjectileType == ProjectileType::PROJECTILE_FIREBALL)
+	if (mProjectileType == ProjectileType::PROJECTILE_FIREBALL || mProjectileType == ProjectileType::PROJECTILE_STAR)
 	{
 		aProjectileRect.mWidth = 100;
 	}
@@ -436,7 +437,7 @@ bool Projectile::IsZombieHitBySplash(Zombie* theZombie)
 	{
 		aRowDeviation = 0;
 	}
-	if (mProjectileType == ProjectileType::PROJECTILE_FIREBALL)
+	if (mProjectileType == ProjectileType::PROJECTILE_FIREBALL || mProjectileType == ProjectileType::PROJECTILE_STAR)
 	{
 		if (aRowDeviation != 0)
 		{
@@ -471,6 +472,10 @@ void Projectile::DoSplashDamage(Zombie* theZombie)
 	if (mProjectileType == ProjectileType::PROJECTILE_FIREBALL)
 	{
 		aMaxSplashDamageAmount = aOriginalDamage;
+	}
+	else if (mProjectileType == ProjectileType::PROJECTILE_STAR)
+	{
+		aMaxSplashDamageAmount = 2 * aOriginalDamage;
 	}
 	int aSplashDamageAmount = aSplashDamage * aZombiesGetSplashed;
 	if (aSplashDamageAmount > aMaxSplashDamageAmount)
